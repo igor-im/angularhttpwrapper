@@ -1,14 +1,29 @@
-import { TestBed, async } from '@angular/core/testing';
+import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import CustomHttpClientService from './customHttpClient.service';
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+  let fixture;
+  let app;
+
+  beforeEach(async() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
-  }));
+      imports: [ HttpClientTestingModule ],
+      providers: [ HttpClient, CustomHttpClientService ],
+      declarations: [AppComponent]
+    }).compileComponents()
+
+      fixture = TestBed.createComponent(AppComponent);
+      app = fixture.componentInstance;
+
+    // Inject the http service and test controller for each test
+    httpClient = TestBed.get(HttpClient);
+    httpTestingController = TestBed.get(HttpTestingController);
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
@@ -16,16 +31,12 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'angularhttpwrap'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('angularhttpwrap');
-  });
-
-  it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+  it(`should have as title 'angularhttpwrap'`, fakeAsync(() => {
+    app.getData().then(() => {
+      expect(app.title).toEqual('delecus aut autem');
+    });
+    tick();
     fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to angularhttpwrap!');
-  });
+    console.log(app.title)
+  }));
 });
